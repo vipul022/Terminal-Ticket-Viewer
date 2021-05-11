@@ -1,5 +1,6 @@
 require("dotenv").config();
 const axios = require("axios");
+const NETWORK_ERROR = "Sorry! There is some problem in the network";
 
 // !Credentials
 const subDomain = process.env.SUB_DOMAIN;
@@ -10,6 +11,7 @@ const auth = {
   username: userName,
   password: password,
 };
+// !function to call Zendesk API
 const fetchTickets = async () => {
   console.log("inside fetchTickets=>");
   try {
@@ -20,8 +22,20 @@ const fetchTickets = async () => {
     let data = result.data.tickets;
     return data;
   } catch (error) {
-    console.log("ERROR=>", error);
+    console.log(NETWORK_ERROR);
   }
 };
 
-module.exports = fetchTickets;
+const showAllTickets = (tickets) => {
+  tickets.forEach((ticket, index) => {
+    let dateCreated = new Date(ticket.created_at).toGMTString();
+    console.log(
+      `${index + 1}. Ticket subject: ${
+        ticket.subject
+      },  Date created: ${dateCreated}, Current status: ${ticket.status}`
+    );
+    console.log("");
+  });
+};
+
+module.exports = { fetchTickets, showAllTickets };
