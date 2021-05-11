@@ -1,6 +1,8 @@
 require("dotenv").config();
+const prompt = require("prompt-sync")();
 const axios = require("axios");
-const NETWORK_ERROR = "Sorry! There is some problem in the network";
+const NETWORK_ERROR = "=> Sorry! There is some problem in the network <=";
+const INVALID_ID = "=> Please enter a valid Ticket Id <=";
 
 // !Credentials
 const subDomain = process.env.SUB_DOMAIN;
@@ -15,11 +17,14 @@ const auth = {
 const fetchTickets = async () => {
   console.log("inside fetchTickets=>");
   try {
+    console.log("here1");
     let result = await axios.get(url, {
       auth: auth,
       Accept: "application / json",
     });
+
     let data = result.data.tickets;
+
     return data;
   } catch (error) {
     console.log(NETWORK_ERROR);
@@ -27,6 +32,7 @@ const fetchTickets = async () => {
 };
 
 const showAllTickets = (tickets) => {
+  console.log("inside showAlltiskets=>");
   tickets.forEach((ticket, index) => {
     let dateCreated = new Date(ticket.created_at).toGMTString();
     console.log(
@@ -38,4 +44,29 @@ const showAllTickets = (tickets) => {
   });
 };
 
-module.exports = { fetchTickets, showAllTickets };
+const findValidTicket = (tickets, userInput) => {
+  let validTicket = tickets.find((ticket) => ticket.id === userInput);
+  return validTicket;
+};
+
+const showSingleTicket = (tickets) => {
+  let userInput;
+  console.log("Please enter the id of the ticket ");
+  userInput = Number(prompt("> "));
+
+  let ticket = findValidTicket(tickets, userInput);
+
+  if (ticket) {
+    let dateCreated = new Date(ticket.created_at).toGMTString();
+    console.log(`* Ticket id: ${ticket.id}`);
+    console.log(`* Ticket subject: ${ticket.subject}`);
+    console.log(`* Date created: ${dateCreated}`);
+    console.log(`* Description: ${ticket.description}`);
+    console.log(`* Priority: ${ticket.priority}`);
+    console.log(`* Current status: ${ticket.status}`);
+  } else {
+    console.log(INVALID_ID);
+  }
+};
+
+module.exports = { fetchTickets, showAllTickets, showSingleTicket };
