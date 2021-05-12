@@ -15,7 +15,6 @@ const auth = {
 };
 // !function to call Zendesk API
 const fetchTickets = async () => {
-  console.log("inside fetchTickets=>");
   try {
     console.log("here1");
     let result = await axios.get(url, {

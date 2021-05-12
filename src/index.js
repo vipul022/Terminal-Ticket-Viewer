@@ -2,8 +2,7 @@ const prompt = require("prompt-sync")();
 const { fetchTickets, showAllTickets, showSingleTicket } = require("./helpers");
 const INVALID_INPUT = "=> Please enter valid input! <=";
 let userInput;
-let displayMenu = false;
-const getTickets = fetchTickets();
+
 const showMenu = () => {
   console.log("***************************************");
   console.log("WeLCOME TO ZENDESK TICKET VIEWER");
@@ -16,32 +15,27 @@ const showMenu = () => {
   userInput = Number(prompt("> "));
 };
 
-showMenu();
+const primaryFunction = async () => {
+  const tickets = await fetchTickets();
 
-getTickets
-  .then((tickets) => {
-    console.log("inside getTickets=>");
-
-    console.log("userInput=>", userInput);
+  while (userInput !== 3) {
+    showMenu();
     switch (userInput) {
       case 1:
         showAllTickets(tickets);
         break;
       case 2:
-        console.log(`${userInput} is 2`);
         showSingleTicket(tickets);
         break;
       case 3:
-        console.log(`${userInput} is 3`);
         console.log(`Thanks for using Zendesk Ticket Viewer! See you soon`);
-        displayMenu = false;
         break;
       default:
         console.log(INVALID_INPUT);
-      // userInput = showMenu();
     }
-    // showMenu();
-  })
-  .catch((error) => {
-    console.log("ERROR=>,", error);
-  });
+  }
+};
+       
+        
+// ! This is the main function that runs the app
+primaryFunction();   
