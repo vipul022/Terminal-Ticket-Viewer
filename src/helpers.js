@@ -13,6 +13,15 @@ const auth = {
   username: userName,
   password: password,
 };
+let result = {
+  page: 1,
+  nextPage: 0,
+  prevPage: 0,
+  limit: 25,
+  paginatedTickets: [],
+};
+let startIndex = 0;
+let endIndex = 0;
 // !function to call Zendesk API
 const fetchTickets = async () => {
   try {
@@ -30,17 +39,57 @@ const fetchTickets = async () => {
   }
 };
 
+const showPaginatedTickets = (tickets) => {
+  startIndex = (result.page - 1) * result.limit;
+  endIndex = result.page * result.limit;
+  incrementOrDecrementPage(tickets);
+  result.paginatedTickets = tickets.slice(startIndex, endIndex);
+
+  console.log("paginatedTickets=>", result.paginatedTickets.length);
+  // return result;
+};
+
+const incrementOrDecrementPage = (tickets) => {
+  console.log("endIndex=>", endIndex);
+  console.log("startIndex=>", startIndex);
+  console.log("tickets.length=>", tickets.length);
+  if (endIndex < tickets.length) {
+    result = { ...result, nextPage: result.page + 1 };
+    console.log("inside if statement=>", result.page);
+  }
+
+  if (startIndex > 0) {
+    // result.page - 1;
+    result = { ...result, prevPage: result.page - 1 };
+  }
+};
+
 const showAllTickets = (tickets) => {
-  console.log("inside showAlltiskets=>");
-  tickets.forEach((ticket, index) => {
-    let dateCreated = new Date(ticket.created_at).toGMTString();
-    console.log(
-      `${index + 1}. Ticket subject: ${
-        ticket.subject
-      },  Date created: ${dateCreated}, Current status: ${ticket.status}`
-    );
-    console.log("");
-  });
+  // const result = showPaginatedTickets(tickets);
+  do {
+    showPaginatedTickets(tickets);
+    let { paginatedTickets } = result;
+    console.log("paginatedTickets=>", paginatedTickets.length);
+    console.log("inside showAllTickets=>");
+    paginatedTickets.forEach((ticket, index) => {
+      let dateCreated = new Date(ticket.created_at).toGMTString();
+      console.log(
+        `${index + 1}. Ticket subject: ${
+          ticket.subject
+        },  Date created: ${dateCreated}, Current status: ${ticket.status}`
+      );
+      console.log("");
+    });
+    console.log(`Page: ${result.page}`);
+    console.log(`Next: ${result.nextPage}`);
+    if (result.prevPage > 0) {
+      console.log(`Prev: ${result.prevPage}`);
+    }
+
+    console.log()
+  } while(result.page <= tickets / result.limit)
+  // incrementOrDecrementPage(tickets);
+  // console.log(`Page: ${result.page}`);
 };
 
 const findValidTicket = (tickets, userInput) => {
