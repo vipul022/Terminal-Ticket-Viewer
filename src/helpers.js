@@ -1,4 +1,5 @@
 require("dotenv").config();
+
 const prompt = require("prompt-sync")();
 const axios = require("axios");
 const NETWORK_ERROR = "=> Sorry! There is some problem in the network <=";
@@ -22,6 +23,7 @@ let result = {
 };
 let startIndex = 0;
 let endIndex = 0;
+let userInput;
 // !function to call Zendesk API
 const fetchTickets = async () => {
   try {
@@ -53,20 +55,37 @@ const incrementOrDecrementPage = (tickets) => {
   console.log("endIndex=>", endIndex);
   console.log("startIndex=>", startIndex);
   console.log("tickets.length=>", tickets.length);
-  if (endIndex < tickets.length) {
+  if (endIndex <= tickets.length) {
     result = { ...result, nextPage: result.page + 1 };
     console.log("inside if statement=>", result.page);
   }
 
-  if (startIndex > 0) {
+  if (startIndex >= 0) {
     // result.page - 1;
     result = { ...result, prevPage: result.page - 1 };
   }
 };
 
+const showPreviousOrNextPage = (tickets) => {
+  if (result.nextPage <= tickets.length / result.limit) {
+    console.log("** Type 'next' to view next page");
+  }
+  if (result.prevPage > 0) {
+    console.log("** Type 'previous' to view previous page");
+  }
+  console.log("** Press enter 'menu' to go back to the main menu");
+  userInput = prompt("> ");
+
+  if (userInput === "next") {
+    result = { ...result, page: result.page + 1 };
+  }
+  if (userInput === "previous") {
+    result = { ...result, page: result.page - 1 };
+  }
+};
 const showAllTickets = (tickets) => {
   // const result = showPaginatedTickets(tickets);
-  do {
+  while (result.page <= tickets.length / result.limit) {
     showPaginatedTickets(tickets);
     let { paginatedTickets } = result;
     console.log("paginatedTickets=>", paginatedTickets.length);
@@ -74,20 +93,20 @@ const showAllTickets = (tickets) => {
     paginatedTickets.forEach((ticket, index) => {
       let dateCreated = new Date(ticket.created_at).toGMTString();
       console.log(
-        `${index + 1}. Ticket subject: ${
-          ticket.subject
-        },  Date created: ${dateCreated}, Current status: ${ticket.status}`
+        `* Ticket subject: ${ticket.subject},  Date created: ${dateCreated}, Current status: ${ticket.status}`
       );
       console.log("");
     });
+    console.log(`Previous: ${result.prevPage}`);
     console.log(`Page: ${result.page}`);
     console.log(`Next: ${result.nextPage}`);
-    if (result.prevPage > 0) {
-      console.log(`Prev: ${result.prevPage}`);
-    }
 
-    console.log()
-  } while(result.page <= tickets / result.limit)
+    showPreviousOrNextPage(tickets);
+    if (userInput === "menu") {
+      break;
+    }
+  }
+  // while (result.page <= tickets.length / result.limit);
   // incrementOrDecrementPage(tickets);
   // console.log(`Page: ${result.page}`);
 };
