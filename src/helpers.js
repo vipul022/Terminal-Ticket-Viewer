@@ -4,6 +4,7 @@ const prompt = require("prompt-sync")();
 const axios = require("axios");
 const NETWORK_ERROR = "=> Sorry! There is some problem in the network <=";
 const INVALID_ID = "=> Please enter a valid Ticket Id <=";
+const INVALID_INPUT = "=> Please enter valid input <=";
 
 // !Credentials
 const subDomain = process.env.SUB_DOMAIN;
@@ -24,6 +25,7 @@ let result = {
 let startIndex = 0;
 let endIndex = 0;
 let userInput;
+let validUserInput = false;
 // !function to call Zendesk API
 const fetchTickets = async () => {
   try {
@@ -61,12 +63,13 @@ const incrementOrDecrementPage = (tickets) => {
   }
 
   if (startIndex >= 0) {
-    // result.page - 1;
     result = { ...result, prevPage: result.page - 1 };
   }
 };
 
 const showPreviousOrNextPage = (tickets) => {
+  // ! set initially validUserInput to false for handling invalid user input every time
+  validUserInput = false;
   if (result.nextPage <= tickets.length / result.limit) {
     console.log("** Type 'next' to view next page");
   }
@@ -78,9 +81,31 @@ const showPreviousOrNextPage = (tickets) => {
 
   if (userInput === "next") {
     result = { ...result, page: result.page + 1 };
+    validUserInput = true;
   }
   if (userInput === "previous") {
     result = { ...result, page: result.page - 1 };
+    validUserInput = true;
+  }
+  console.log("userInput=>", userInput);
+  if (userInput === "menu") {
+    validUserInput = true;
+  }
+};
+
+const handleInvalidInput = (userInput) => {
+  console.log("inside handleInvalidInput=>");
+  while (!validUserInput) {
+    console.log("userInput=>", userInput);
+    console.log(INVALID_INPUT);
+    userInput = prompt("> ");
+    if (
+      userInput === "next" ||
+      userInput === "previous" ||
+      userInput === "menu"
+    ) {
+      validUserInput = true;
+    } else validUserInput = false;
   }
 };
 const showAllTickets = (tickets) => {
@@ -98,17 +123,16 @@ const showAllTickets = (tickets) => {
       console.log("");
     });
     console.log(`Previous: ${result.prevPage}`);
-    console.log(`Page: ${result.page}`);
+    console.log(`** Page number: ${result.page}`);
     console.log(`Next: ${result.nextPage}`);
 
     showPreviousOrNextPage(tickets);
+    handleInvalidInput(userInput);
     if (userInput === "menu") {
+      // validUserInput = true;
       break;
     }
   }
-  // while (result.page <= tickets.length / result.limit);
-  // incrementOrDecrementPage(tickets);
-  // console.log(`Page: ${result.page}`);
 };
 
 const findValidTicket = (tickets, userInput) => {
