@@ -2,6 +2,7 @@ const prompt = require("prompt-sync")();
 const { fetchTickets, showAllTickets, showSingleTicket } = require("./helpers");
 const INVALID_INPUT = "=> Please enter valid input! <=";
 let userInput;
+const NETWORK_ERROR = "=> Sorry! There is some problem in the network <=";
 
 const showMenu = () => {
   console.log("***************************************");
@@ -16,23 +17,27 @@ const showMenu = () => {
 };
 
 const primaryFunction = async () => {
-  const tickets = await fetchTickets();
+  try {
+    const tickets = await fetchTickets();
 
-  while (userInput !== 3) {
-    showMenu();
-    switch (userInput) {
-      case 1:
-        showAllTickets(tickets);
-        break;
-      case 2:
-        showSingleTicket(tickets);
-        break;
-      case 3:
-        console.log(`Thanks for using Zendesk Ticket Viewer! See you soon`);
-        break;
-      default:
-        console.log(INVALID_INPUT);
+    while (userInput !== 3) {
+      showMenu();
+      switch (userInput) {
+        case 1:
+          showAllTickets(tickets);
+          break;
+        case 2:
+          showSingleTicket(tickets);
+          break;
+        case 3:
+          console.log(`Thanks for using Zendesk Ticket Viewer! See you soon`);
+          break;
+        default:
+          console.log(INVALID_INPUT);
+      }
     }
+  } catch (error) {
+    console.log(NETWORK_ERROR);
   }
 };
 
