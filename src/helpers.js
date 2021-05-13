@@ -52,8 +52,8 @@ const createPaginatedTickets = (tickets) => {
   result.paginatedTickets = tickets.slice(startIndex, endIndex);
 };
 
-const showPaginatedTickets = () => {
-  let { paginatedTickets } = result;
+const showPaginatedTickets = (paginatedTickets) => {
+  // let { paginatedTickets } = result;
   paginatedTickets.forEach((ticket) => {
     let dateCreated = new Date(ticket.created_at).toGMTString();
     console.log(
@@ -114,9 +114,16 @@ const handleInvalidInput = (userInput) => {
   }
 };
 const showAllTickets = (tickets) => {
+  // ! if less then 25 tickets are returned
+  if (tickets.length < result.limit) {
+    result.paginatedTickets = tickets;
+    showPaginatedTickets(result.paginatedTickets);
+  }
+  // ! if 25 or more than 25 tickets are returned
   while (result.page <= tickets.length / result.limit) {
     createPaginatedTickets(tickets);
-    showPaginatedTickets();
+    let { paginatedTickets } = result;
+    showPaginatedTickets(paginatedTickets);
     showPreviousOrNextPage(tickets);
     handleInvalidInput(userInput);
     if (userInput === "menu") {
