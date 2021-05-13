@@ -15,6 +15,7 @@ const auth = {
   username: userName,
   password: password,
 };
+// ! The result object is a global variable that is used in all the functions below to handle pagination and display the tickets
 let result = {
   page: 1,
   nextPage: 0,
@@ -22,6 +23,7 @@ let result = {
   limit: 25,
   paginatedTickets: [],
 };
+// ! Global variables
 let startIndex = 0;
 let endIndex = 0;
 let userInput;
@@ -43,25 +45,30 @@ const fetchTickets = async () => {
   }
 };
 
-const showPaginatedTickets = (tickets) => {
+const createPaginatedTickets = (tickets) => {
   startIndex = (result.page - 1) * result.limit;
   endIndex = result.page * result.limit;
   incrementOrDecrementPage(tickets);
   result.paginatedTickets = tickets.slice(startIndex, endIndex);
+};
 
-  console.log("paginatedTickets=>", result.paginatedTickets.length);
-  // return result;
+const showPaginatedTickets = () => {
+  let { paginatedTickets } = result;
+  paginatedTickets.forEach((ticket) => {
+    let dateCreated = new Date(ticket.created_at).toGMTString();
+    console.log(
+      `* Ticket subject: ${ticket.subject},  Date created: ${dateCreated}, Current status: ${ticket.status}`
+    );
+    console.log("");
+  });
+  console.log(`** Page number: ${result.page}`);
+  console.log("");
 };
 
 const incrementOrDecrementPage = (tickets) => {
-  console.log("endIndex=>", endIndex);
-  console.log("startIndex=>", startIndex);
-  console.log("tickets.length=>", tickets.length);
   if (endIndex <= tickets.length) {
     result = { ...result, nextPage: result.page + 1 };
-    console.log("inside if statement=>", result.page);
   }
-
   if (startIndex >= 0) {
     result = { ...result, prevPage: result.page - 1 };
   }
@@ -87,16 +94,14 @@ const showPreviousOrNextPage = (tickets) => {
     result = { ...result, page: result.page - 1 };
     validUserInput = true;
   }
-  console.log("userInput=>", userInput);
+
   if (userInput === "menu") {
     validUserInput = true;
   }
 };
 
 const handleInvalidInput = (userInput) => {
-  console.log("inside handleInvalidInput=>");
   while (!validUserInput) {
-    console.log("userInput=>", userInput);
     console.log(INVALID_INPUT);
     userInput = prompt("> ");
     if (
@@ -109,27 +114,12 @@ const handleInvalidInput = (userInput) => {
   }
 };
 const showAllTickets = (tickets) => {
-  // const result = showPaginatedTickets(tickets);
   while (result.page <= tickets.length / result.limit) {
-    showPaginatedTickets(tickets);
-    let { paginatedTickets } = result;
-    console.log("paginatedTickets=>", paginatedTickets.length);
-    console.log("inside showAllTickets=>");
-    paginatedTickets.forEach((ticket, index) => {
-      let dateCreated = new Date(ticket.created_at).toGMTString();
-      console.log(
-        `* Ticket subject: ${ticket.subject},  Date created: ${dateCreated}, Current status: ${ticket.status}`
-      );
-      console.log("");
-    });
-    console.log(`Previous: ${result.prevPage}`);
-    console.log(`** Page number: ${result.page}`);
-    console.log(`Next: ${result.nextPage}`);
-
+    createPaginatedTickets(tickets);
+    showPaginatedTickets();
     showPreviousOrNextPage(tickets);
     handleInvalidInput(userInput);
     if (userInput === "menu") {
-      // validUserInput = true;
       break;
     }
   }
@@ -144,9 +134,7 @@ const showSingleTicket = (tickets) => {
   let userInput;
   console.log("Please enter the id of the ticket ");
   userInput = Number(prompt("> "));
-
   let ticket = findValidTicket(tickets, userInput);
-
   if (ticket) {
     let dateCreated = new Date(ticket.created_at).toGMTString();
     console.log(`* Ticket id: ${ticket.id}`);

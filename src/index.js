@@ -35,7 +35,6 @@ const primaryFunction = async () => {
     }
   }
 };
-       
-        
+
 // ! This is the main function that runs the app
-primaryFunction();   
+primaryFunction();
