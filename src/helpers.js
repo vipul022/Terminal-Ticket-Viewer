@@ -163,4 +163,5 @@ module.exports = {
   fetchTickets,
   showAllTickets,
   showSingleTicket,
+  findValidTicket,
 };
