@@ -30,7 +30,6 @@ let validUserInput = false;
 // !function to call Zendesk API
 const fetchTickets = async () => {
   try {
-    console.log("here1");
     let result = await axios.get(url, {
       auth: auth,
       Accept: "application / json",
@@ -52,8 +51,6 @@ const createPaginatedTickets = (tickets) => {
 
 const showPaginatedTickets = (result) => {
   let { paginatedTickets } = result;
-
-  console.log("typeof paginatedTickets=> ", typeof paginatedTickets);
 
   paginatedTickets.forEach((ticket) => {
     let dateCreated = new Date(ticket.created_at).toGMTString();
@@ -124,7 +121,6 @@ const showAllTickets = (tickets) => {
   }
   // ! if 25 or more than 25 tickets are returned
   while (result.page <= tickets.length / result.limit) {
-    console.log("in while");
     createPaginatedTickets(tickets);
 
     showPaginatedTickets(result);
