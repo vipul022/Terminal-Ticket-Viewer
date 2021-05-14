@@ -1,5 +1,4 @@
 require("dotenv").config();
-
 const prompt = require("prompt-sync")();
 const axios = require("axios");
 const NETWORK_ERROR = "=> Sorry! There is some problem in the network <=";
@@ -38,7 +37,6 @@ const fetchTickets = async () => {
     });
 
     let data = result.data.tickets;
-
     return data;
   } catch (error) {
     console.log(NETWORK_ERROR);
@@ -52,8 +50,11 @@ const createPaginatedTickets = (tickets) => {
   result.paginatedTickets = tickets.slice(startIndex, endIndex);
 };
 
-const showPaginatedTickets = (paginatedTickets) => {
-  // let { paginatedTickets } = result;
+const showPaginatedTickets = (result) => {
+  let { paginatedTickets } = result;
+
+  console.log("typeof paginatedTickets=> ", typeof paginatedTickets);
+
   paginatedTickets.forEach((ticket) => {
     let dateCreated = new Date(ticket.created_at).toGMTString();
     console.log(
@@ -115,15 +116,18 @@ const handleInvalidInput = (userInput) => {
 };
 const showAllTickets = (tickets) => {
   // ! if less then 25 tickets are returned
+
   if (tickets.length < result.limit) {
     result.paginatedTickets = tickets;
-    showPaginatedTickets(result.paginatedTickets);
+
+    showPaginatedTickets(result);
   }
   // ! if 25 or more than 25 tickets are returned
   while (result.page <= tickets.length / result.limit) {
+    console.log("in while");
     createPaginatedTickets(tickets);
-    let { paginatedTickets } = result;
-    showPaginatedTickets(paginatedTickets);
+
+    showPaginatedTickets(result);
     showPreviousOrNextPage(tickets);
     handleInvalidInput(userInput);
     if (userInput === "menu") {
@@ -155,4 +159,8 @@ const showSingleTicket = (tickets) => {
   }
 };
 
-module.exports = { fetchTickets, showAllTickets, showSingleTicket };
+module.exports = {
+  fetchTickets,
+  showAllTickets,
+  showSingleTicket,
+};
