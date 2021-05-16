@@ -20,6 +20,10 @@ Run the following command to run all the unit tests:
 
 `yarn test`
 
+
+Please make sure to create a .env file in the project folder with the credentials that have been through email.
+
+
 ## Tech Stack
 
 - JavaScript
