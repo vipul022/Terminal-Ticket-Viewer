@@ -30,29 +30,7 @@ describe(" Test fetchTickets function", () => {
   });
 });
 
-// describe("Test showAllTickets function", () => {
-//   it("should display the correct number of tickets", () => {
-//     showPaginatedTickets = jest.fn();
-//     const showAllTickets = () => showPaginatedTickets();
-//     const { tickets } = result.data;
-//     showAllTickets(tickets);
-//     expect(showPaginatedTickets).toHaveBeenCalledTimes(1);
 
-//     const showPaginatedTickets = jest.spyOn(helpers, "showPaginatedTickets");
-//     const { tickets } = result.data;
-//     showAllTickets(tickets);
-//     expect(showPaginatedTickets).toHaveBeenCalledTimes(1);
-
-//     const showPaginatedTickets = jest.fn();
-//     const showAllTickets = () => showPaginatedTickets();
-//     const { tickets } = result.data;
-
-//     showAllTickets(tickets);
-//     expect(showPaginatedTickets).toBeCalled();
-//   });
-// });
-
-// ! P.S -  I am having issues in testing some functions as they are not returning anything.
 
 describe("Test findValidTicket function", () => {
   const { tickets } = result.data;
